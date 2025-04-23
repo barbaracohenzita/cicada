@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cicada Web Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #0f0;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            margin: auto;
+            max-width: 600px;
+            padding: 20px;
+            border: 2px solid #0f0;
+            background: #111;
+            box-shadow: 0 0 20px #0f0;
+            border-radius: 10px;
+        }
+        input[type="text"] {
+            font-size: 16px;
+            padding: 5px;
+            margin-top: 10px;
+            background: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            width: 80%;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #0f0;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0d0;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Web Game</h1>
+        <p>Decode the following message to proceed:</p>
+        <p><strong>VJKU KU C GZCOR</strong></p>
+        <p>Hint: Use a Caesar cipher with a shift of -2.</p>
+        <input id="answer" type="text" placeholder="Enter your answer here">
+        <button onclick="checkAnswer()">Submit</button>
+        <p id="message" class="hidden"></p>
+    </div>
+
+    <script>
+        function checkAnswer() {
+            const userAnswer = document.getElementById('answer').value.toUpperCase();
+            const correctAnswer = "THIS IS A TEST";
+            const message = document.getElementById('message');
+            
+            if (userAnswer === correctAnswer) {
+                message.textContent = "Correct! Proceed to the next step.";
+                message.style.color = "#0f0";
+                message.classList.remove('hidden');
+            } else {
+                message.textContent = "Incorrect. Try again.";
+                message.style.color = "#f00";
+                message.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
