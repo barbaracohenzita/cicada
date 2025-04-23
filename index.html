@@ -1,81 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cicada Web Game</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #000;
-            color: #0f0;
-            text-align: center;
-            padding: 20px;
-        }
-        .container {
-            margin: auto;
-            max-width: 600px;
-            padding: 20px;
-            border: 2px solid #0f0;
-            background: #111;
-            box-shadow: 0 0 20px #0f0;
-            border-radius: 10px;
-        }
-        input[type="text"] {
-            font-size: 16px;
-            padding: 5px;
-            margin-top: 10px;
-            background: #000;
-            color: #0f0;
-            border: 1px solid #0f0;
-            border-radius: 5px;
-            width: 80%;
-        }
-        button {
-            margin: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #0f0;
-            color: #000;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #0d0;
-        }
-        .hidden {
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cicada Web Game</title>
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:#000;
+      color:#0f0;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+    }
+    .container{
+      max-width:640px;
+      width:90%;
+      padding:2rem;
+      border:2px solid #0f0;
+      background:#111;
+      border-radius:10px;
+      box-shadow:0 0 20px #0f0;
+      text-align:center;
+    }
+    input[type=text]{
+      width:80%;
+      padding:8px;
+      margin-top:12px;
+      background:#000;
+      color:#0f0;
+      border:1px solid #0f0;
+      border-radius:5px;
+      font-size:1rem;
+    }
+    button{
+      margin-top:12px;
+      padding:10px 24px;
+      font-size:1rem;
+      background:#0f0;
+      color:#000;
+      border:none;
+      border-radius:5px;
+      cursor:pointer;
+    }
+    button:hover{background:#0d0}
+    .hidden{display:none}
+    .stage-title{margin-top:0}
+    .hint{font-size:.9rem;color:#9f9}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to the Web Game</h1>
-        <p>Decode the following message to proceed:</p>
-        <p><strong>VJKU KU C GZCOR</strong></p>
-        <p>Hint: Use a Caesar cipher with a shift of -2.</p>
-        <input id="answer" type="text" placeholder="Enter your answer here">
-        <button onclick="checkAnswer()">Submit</button>
-        <p id="message" class="hidden"></p>
-    </div>
+  <div class="container">
+    <h1>Cicada-style Web Game</h1>
 
-    <script>
-        function checkAnswer() {
-            const userAnswer = document.getElementById('answer').value.toUpperCase();
-            const correctAnswer = "THIS IS A TEST";
-            const message = document.getElementById('message');
-            
-            if (userAnswer === correctAnswer) {
-                message.textContent = "Correct! Proceed to the next step.";
-                message.style.color = "#0f0";
-                message.classList.remove('hidden');
-            } else {
-                message.textContent = "Incorrect. Try again.";
-                message.style.color = "#f00";
-                message.classList.remove('hidden');
-            }
+    <!-- puzzle content injected here -->
+    <h2 id="stageTitle" class="stage-title"></h2>
+    <p id="cipher"></p>
+    <p id="hint" class="hint"></p>
+
+    <input id="answer" type="text" placeholder="Enter your answer here" autocomplete="off" />
+    <button id="submitBtn">Submit</button>
+
+    <p id="message" class="hidden"></p>
+  </div>
+
+  <script>
+    /* === GAME DATA  ======================================================= */
+    const stages = [
+      {
+        title: "Stage 1",
+        cipher: "VJKU KU C VGUV",          // Caesar −2  → THIS IS A TEST
+        hint:  "Caesar cipher, shift −2",
+        answer:"THIS IS A TEST"
+      },
+      {
+        title: "Stage 2",
+        cipher: "GUR YRGGREF JNER YRNQVAT ZR GB LBH",
+        hint:  "ROT-13",
+        answer:"THE LETTERS WERE LEADING ME TO YOU"
+      },
+      {
+        title: "Stage 3",
+        cipher: "SXQncyBvbmx5IHRoZSBpbml0aWFsLg==",
+        hint:  "Base-64",
+        answer:"IT'S ONLY THE INITIAL."
+      }
+    ];
+
+    /* === GAME ENGINE  ===================================================== */
+    let current = 0;
+    const dom = {
+      title:   document.getElementById("stageTitle"),
+      cipher:  document.getElementById("cipher"),
+      hint:    document.getElementById("hint"),
+      answer:  document.getElementById("answer"),
+      btn:     document.getElementById("submitBtn"),
+      msg:     document.getElementById("message")
+    };
+
+    function loadStage(idx){
+      const {title,cipher,hint} = stages[idx];
+      dom.title.textContent  = title;
+      dom.cipher.textContent = cipher;
+      dom.hint.textContent   = "Hint: " + hint;
+      dom.answer.value       = "";
+      dom.msg.classList.add("hidden");
+      dom.answer.focus();
+    }
+
+    function check(){
+      const user = dom.answer.value.trim().toUpperCase();
+      const correct = stages[current].answer;
+      if(user === correct){
+        dom.msg.textContent = "✅  Correct!";
+        dom.msg.style.color = "#0f0";
+        dom.msg.classList.remove("hidden");
+
+        current++;
+        if(current < stages.length){
+          // small delay for dramatic effect
+          setTimeout(()=>loadStage(current), 1200);
+        }else{
+          dom.cipher.textContent = "🎉 CONGRATULATIONS — YOU’VE REACHED THE END (FOR NOW)!";
+          dom.hint.textContent   = "";
+          dom.answer.classList.add("hidden");
+          dom.btn.classList.add("hidden");
         }
-    </script>
+      }else{
+        dom.msg.textContent = "❌  Incorrect. Try again.";
+        dom.msg.style.color = "#f00";
+        dom.msg.classList.remove("hidden");
+      }
+    }
+
+    dom.btn.addEventListener("click", check);
+    dom.answer.addEventListener("keydown", e => {
+      if(e.key === "Enter") check();
+    });
+
+    /* kick-off */
+    loadStage(current);
+  </script>
 </body>
 </html>
